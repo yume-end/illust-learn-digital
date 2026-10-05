@@ -1,0 +1,10 @@
+{
+  "name": "Atelier — はじめてのデジタルイラスト",
+  "short_name": "Atelier",
+  "description": "描いて、考えて、少しずつ身につけるイラスト練習室。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#f7f5f1",
+  "lang": "ja"
+}
