@@ -35,7 +35,6 @@ export function Studio({ onBack }: { onBack: () => void }) {
     const ctx = canvas.getContext('2d'); if (ctx) ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     const dctx = draw.getContext('2d'); if (dctx) dctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   }, []);
-  useEffect(() => { const id = window.setTimeout(() => redraw(layers), 0); return () => window.clearTimeout(id); }, [layers, redraw]);
   const redraw = useCallback((items: Layer[]) => {
     const canvas = canvasRef.current; if (!canvas) return;
     const rect = canvas.getBoundingClientRect(); const ratio = window.devicePixelRatio || 1;
@@ -43,6 +42,7 @@ export function Studio({ onBack }: { onBack: () => void }) {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0); ctx.clearRect(0, 0, rect.width, rect.height);
     for (const layer of items) { if (!layer.visible) continue; ctx.save(); ctx.globalAlpha = layer.opacity / 100; for (const stroke of layer.strokes) drawStroke(ctx, stroke); ctx.restore(); }
   }, []);
+  useEffect(() => { const id = window.setTimeout(() => redraw(layers), 0); return () => window.clearTimeout(id); }, [layers, redraw]);
   useEffect(() => {
     const canvas = canvasRef.current;
     resizeCanvas();

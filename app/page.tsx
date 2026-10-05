@@ -7,6 +7,7 @@ import { lessons, stages } from '@/lib/lesson/data';
 import { Studio } from '@/components/Studio';
 
 type View = 'home' | 'lessons' | 'lesson' | 'studio' | 'projects' | 'review' | 'settings';
+type StageWithLessons = (typeof stages)[number] & { items: typeof lessons };
 
 export default function Home() {
   useEffect(() => { if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => undefined); }, []);
@@ -53,7 +54,7 @@ export default function Home() {
   </main>;
 }
 
-function Dashboard({ completed, openLesson, openStudio, openLessons, stages }: { completed: string[]; openLesson: (id: string) => void; openStudio: () => void; openLessons: () => void; stages: (typeof stages[number] & { items: typeof lessons })[] }) {
+function Dashboard({ completed, openLesson, openStudio, openLessons, stages }: { completed: string[]; openLesson: (id: string) => void; openStudio: () => void; openLessons: () => void; stages: StageWithLessons[] }) {
   const nextLesson = lessons.find((item) => !completed.includes(item.id)) ?? lessons[0];
   return <div className="page-content dashboard">
     <div className="welcome-row"><div><span className="eyebrow">YOUR CREATIVE JOURNEY</span><h1>こんにちは、<em>あたらしい一枚</em>を<br className="desktop-break" />描いてみませんか？</h1><p className="welcome-copy">小さな一歩を重ねて、自分だけの絵に出会う場所。</p></div><div className="welcome-illustration" aria-hidden="true"><div className="sun-orbit" /><div className="paper-shape"><span className="shape-sun" /><span className="shape-mountain" /><span className="shape-hill" /></div><span className="orbit-star star-one">✳</span><span className="orbit-star star-two">✦</span><span className="orbit-star star-three">·</span></div></div>
@@ -66,7 +67,7 @@ function Dashboard({ completed, openLesson, openStudio, openLessons, stages }: {
   </div>;
 }
 
-function LessonLibrary({ stages, completed, tab, setTab, open }: { stages: (typeof stages[number] & { items: typeof lessons })[]; completed: string[]; tab: string; setTab: (value: string) => void; open: (id: string) => void }) {
+function LessonLibrary({ stages, completed, tab, setTab, open }: { stages: StageWithLessons[]; completed: string[]; tab: string; setTab: (value: string) => void; open: (id: string) => void }) {
   const categories = ['すべて', ...Array.from(new Set(lessons.map((item) => item.category)))];
   const items = tab === 'すべて' ? lessons : lessons.filter((item) => item.category === tab);
   return <div className="page-content library-page"><span className="eyebrow">YOUR LEARNING PATH</span><h1>レッスン</h1><p className="library-intro">描きながら、少しずつ。気になるところからはじめてみましょう。</p><div className="progress-banner"><div className="progress-icon">✳</div><div><b>あなたのペースで進めよう</b><span>{completed.length} / {lessons.length} レッスンを完了</span></div><div className="progress-track"><i style={{ width: `${lessons.length ? completed.length / lessons.length * 100 : 0}%` }}/></div></div><div className="filter-row">{categories.map((item) => <button key={item} onClick={() => setTab(item)} className={tab === item ? 'filter-chip selected' : 'filter-chip'}>{item}</button>)}</div><div className="lesson-list">{items.map((item, index) => <button className="lesson-row" key={item.id} onClick={() => open(item.id)}><span className={`lesson-row-art art-${index % 4}`}>{['✳','◯','▱','◇'][index % 4]}</span><span className="lesson-row-copy"><span className="tag">STAGE {String(item.stage).padStart(2,'0')}　·　{item.category}</span><b>{item.title}</b><small>{item.objective}</small></span><span className="lesson-row-end">{completed.includes(item.id) ? <span className="completed-mark">✓ 完了</span> : <span>◷ {item.duration}</span>}<b>→</b></span></button>)}</div><div className="section-heading stage-heading"><div><span className="eyebrow">ALL THE WAY THROUGH</span><h2>ステージ一覧</h2></div></div><div className="stage-grid">{stages.map((stage) => <div key={stage.id} className={`stage-card ${stage.color}`}><span className="stage-icon">{stage.icon}</span><div><span className="stage-num">STAGE {String(stage.id).padStart(2,'0')}</span><h3>{stage.name}</h3><p>{stage.items.length ? `${stage.items.length} レッスン` : stage.subtitle}</p></div></div>)}</div></div>;
